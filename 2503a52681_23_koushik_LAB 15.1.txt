@@ -1,0 +1,153 @@
+LAB ASSIGNMENT-15
+Name: N.KOUSHIK
+Roll No: 2503A52681
+
+LAB 15: IMPLEMENTING IDENTITY AND ACCESS MANAGEMENT (IAM)
+
+Source note:
+The supplied PDF is titled “Lab 7: Implementing Identity and Access Management”. As confirmed, this IAM handout is being prepared as Lab Assignment 15. The procedure and expected results below follow the supplied IAM handout.
+
+OBJECTIVE:
+Open IAM, inspect the learner account, and use the Policy Simulator to test a simple S3 read-only policy for the team product.
+
+IMPORTANT:
+This lab uses the AWS IAM Policy Simulator. Do not create or change live IAM users, groups, roles, policies, or permissions. The policy is for simulation only.
+
+TASK-1
+Task: Start AWS Academy Learner Lab and inspect the IAM dashboard.
+
+PROMPT:
+Give simple steps to open the AWS IAM dashboard in AWS Academy Learner Lab and inspect Users, User groups, Roles, and Policies. Do not create or modify any IAM resources.
+
+CODE / PROCEDURE:
+1. Open AWS Academy.
+2. Choose Start Lab and wait until the status is Ready.
+3. Choose AWS to open the Management Console.
+4. Use the AWS search bar and enter IAM.
+5. Choose Identity and Access Management.
+6. IAM is a global service, so the console displays Global rather than a Region.
+7. Observe the counts for Users, User groups, Roles, and Policies.
+8. Do not choose Create user, Create role, or Create policy.
+
+OUTPUT / OBSERVATION:
+Example dashboard counts shown in the supplied lab sheet:
+Users: 0
+User groups: 0
+Roles: 24
+Policies: 6
+
+Note: Your account counts may be different. These are example values from the supplied handout.
+
+Screenshot checkpoint:
+Capture the IAM dashboard. Hide or crop the account ID and federated username in the top-right corner.
+
+TASK-2
+Task: Open Policy Simulator in Custom mode and add a sample policy.
+
+PROMPT:
+Explain how to open the IAM Policy Simulator in Custom mode and add a custom policy named Lab7-S3-ReadOnly-Demo. State that the policy is used only for simulation and is not attached to a live IAM identity.
+
+CODE / PROCEDURE:
+1. On the IAM dashboard, choose Policy simulator in the Tools area.
+2. If it is not visible, search IAM for Policy simulator.
+3. Choose Custom mode.
+4. Choose Add policy.
+5. Enter the policy name: Lab7-S3-ReadOnly-Demo.
+6. Paste the sample policy given in Task 3.
+7. Choose Create or Save.
+8. Return to the simulator.
+9. Make sure the checkbox beside Lab7-S3-ReadOnly-Demo is selected.
+
+OUTPUT:
+Policy mode: Custom
+Policy name: Lab7-S3-ReadOnly-Demo
+Policy selected: Yes
+Purpose: Simulation only
+
+No live IAM user or role is modified.
+
+TASK-3
+Task: Add a sample S3 read-only policy that allows listing and reading from one bucket.
+
+PROMPT:
+Write a valid AWS IAM JSON policy that allows s3:ListBucket on one S3 bucket and s3:GetObject on objects in that bucket. Do not allow upload or delete actions. Use YOUR-BUCKET-NAME as a placeholder.
+
+CODE:
+Replace YOUR-BUCKET-NAME with the bucket name from your earlier S3 lab.
+
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::YOUR-BUCKET-NAME"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::YOUR-BUCKET-NAME/*"
+    }
+  ]
+}
+
+OUTPUT / EXPECTED PERMISSIONS:
+s3:ListBucket  – Allowed
+s3:GetObject   – Allowed
+s3:PutObject   – Denied by this policy
+s3:DeleteObject – Denied by this policy
+
+Explanation:
+The policy allows listing the bucket and reading its objects. It does not include upload or delete permissions. AWS denies a request by default unless an applicable policy allows it.
+
+TASK-4
+Task: Test the policy using the IAM Policy Simulator. Test ListBucket, GetObject, PutObject, and DeleteObject.
+
+PROMPT:
+Explain how to test four S3 actions in the AWS IAM Policy Simulator using the sample read-only policy. Give the expected Allowed or Denied result for each action.
+
+CODE / PROCEDURE:
+1. Keep the Policy Simulator open.
+2. Choose Add actions.
+3. Choose S3.
+4. Select the action named in the test table.
+5. Enter the matching resource ARN.
+6. Choose Simulate.
+7. Record whether the result is Allowed or Denied.
+8. Repeat for the next action.
+
+RESOURCES:
+Bucket ARN:
+arn:aws:s3:::YOUR-BUCKET-NAME
+
+Object ARN:
+arn:aws:s3:::YOUR-BUCKET-NAME/sample.txt
+
+OUTPUT / EXPECTED RESULT:
+Action          Resource                                      Result
+ListBucket      arn:aws:s3:::YOUR-BUCKET-NAME                 Allowed
+GetObject       arn:aws:s3:::YOUR-BUCKET-NAME/sample.txt      Allowed
+PutObject       arn:aws:s3:::YOUR-BUCKET-NAME/sample.txt      Denied
+DeleteObject    arn:aws:s3:::YOUR-BUCKET-NAME/sample.txt      Denied
+
+The expected results follow the sample policy. Replace the placeholder bucket name with your actual bucket name in the simulator.
+
+Screenshot checkpoint:
+Capture the Policy Simulator results showing allowed and denied actions.
+
+TASK-5
+Task: Connect IAM permissions to your team product.
+
+PROMPT:
+Write 3–4 simple sentences explaining which part of a team product needs AWS access, which AWS resource it needs, the minimum permission required, and one action it should not be allowed to perform. State that this is only a proposed permission design.
+
+CODE / ANSWER:
+“Our product’s backend needs to display files stored in our team’s S3 bucket. It needs permission to read those files using s3:GetObject. It may also need s3:ListBucket to list the files in the bucket. It does not need permission to delete files using s3:DeleteObject. We tested this permission idea in the Policy Simulator; we did not change AWS access.”
+
+OUTPUT:
+Product component: Backend application
+AWS resource: Team S3 bucket
+Minimum read permission: s3:GetObject
+Listing permission, if required: s3:ListBucket
+Action not allowed: s3:DeleteObject
+Result: The proposed permissions follow the principle of least privilege.
